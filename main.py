@@ -1,14 +1,11 @@
 import customtkinter as ctk
 import requests
-import bcrypt
+import crypt
 from tkinter import font
 import json
 
 def check_password(plaintext_password, hashed_password):
-    plaintext_password_bytes = plaintext_password.encode('utf-8')
-    hashed_password_bytes = hashed_password.encode('utf-8')
-    return bcrypt.checkpw(plaintext_password_bytes, hashed_password_bytes)
-
+    return crypt.crypt(plaintext_password, hashed_password) == hashed_password
 
 url = 'http://example.com/path/to/remote_file.json'
 response = requests.get(url)
@@ -97,8 +94,8 @@ def log_in_local(username, password):
 
 
 def register(username, password):
-    password_bytes = password.encode('utf-8')
-    hashed_password = bcrypt.hashpw(password_bytes, bcrypt.gensalt())
+    salt = "random_salt"
+    hashed_password = crypt.crypt(password, salt)
     data = {
         str(username): {
             'password': str(hashed_password),
