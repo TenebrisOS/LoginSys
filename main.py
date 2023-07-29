@@ -4,6 +4,12 @@ import bcrypt
 from tkinter import font
 import json
 
+def check_password(plaintext_password, hashed_password):
+    plaintext_password_bytes = plaintext_password.encode('utf-8')
+    hashed_password_bytes = hashed_password.encode('utf-8')
+    return bcrypt.checkpw(plaintext_password_bytes, hashed_password_bytes)
+
+
 url = 'http://example.com/path/to/remote_file.json'
 response = requests.get(url)
 root = ctk.CTk()
@@ -11,9 +17,6 @@ root.geometry('640x480')
 root.minsize(640, 480)
 root.maxsize(640, 480)
 root.title("Login System Alpha")
-
-# region Log in Canvas
-
 
 def login():
     log_inButton.destroy()
@@ -35,11 +38,12 @@ def login():
         root, text="Network Login", variable=bool_var)
     bool_button.place(x=380, y=240)
     pwentry.place(x=180, y=200)
-    loginButton = ctk.CTkButton(root, text="Log In")
+
+    # Use lambda to pass the function with arguments without executing it immediately
+    loginButton = ctk.CTkButton(root, text="Log In", command=lambda: log_in_local(username=usentry.get(), password=pwentry.get()))
     loginButton.place(x=220, y=240)
 
-# endregion
-
+# ... (remaining code
 
 def log_in(bool_var, usentry, pwentry):
     if bool_var.get():
@@ -69,15 +73,23 @@ def log_in_network(username, password):
 # region Local Way
 
 
-def log_in_local(username, password):
-    password_bytes = password.encode('utf-8')
-    hashed_password = bcrypt.hashpw(password_bytes, bcrypt.gensalt())
 
-    if bcrypt.checkpw(password_bytes, hashed_password):
-        print("Password is correct.")
-        return True
+def log_in_local(username, password):
+    with open('data/accounts/accounts.json', 'r') as json_file:
+        existing_data = json.load(json_file)
+
+    for user_data in existing_data:
+        if username in user_data:
+            hashed_password = user_data[username]['password']
+            if check_password(password, hashed_password):
+                print("Password is correct.")
+                return True
+            else:
+                print("Password is incorrect.")
+                return False
+            break
     else:
-        print("Password is incorrect.")
+        print(f"User '{username}' not found.")
         return False
 # endregion
 
@@ -88,8 +100,11 @@ def register(username, password):
     password_bytes = password.encode('utf-8')
     hashed_password = bcrypt.hashpw(password_bytes, bcrypt.gensalt())
     data = {
-        'username': str(username),
-        'password': str(hashed_password)
+        str(username): {
+            'password': str(hashed_password),
+            'email': "",
+            'phone': ''
+        }
     }
 
     try:
@@ -131,31 +146,14 @@ def signup(event):
     def on_register_button_click(event):
         password = pw_entry.get()
         username = us_rentry.get()
-        register(username, password)  # Call the register function here
-
-    def getback():
-        register_Button.destroy()
-        bool_button.destroy()
-        us_rentry.destroy()
-        pw_entry.destroy()
-        label.destroy()
-        pwlabel.destroy()
-        uslabel.destroy()
-
-        log_inButton = ctk.CTkButton(root, text="Log In", command=login)
-        log_inButton.place(x=330, y=200)
-        sign_upButton = ctk.CTkButton(root, text="Sign Up")
-        sign_upButton.bind("<Button-1>", signup)
-        sign_upButton.place(x=170, y=200)
+        register(username, password)
 
     register_Button = ctk.CTkButton(root, text="Register")
     register_Button.place(x=220, y=240)
     register_Button.bind("<Button-1>", on_register_button_click)
-    back = ctk.CTkButton(root, text="Register", command=getback)
 
-    def getback():
+    def getback(event=None):
         register_Button.destroy()
-        bool_button.destroy()
         us_rentry.destroy()
         pw_entry.destroy()
         label.destroy()
@@ -168,8 +166,9 @@ def signup(event):
         sign_upButton.bind("<Button-1>", signup)
         sign_upButton.place(x=170, y=200)
 
+    back = ctk.CTkButton(root, text="back", command=getback)
     back.place(x=20, y=20)
-    back.bind("<Button-1>", )
+    back.bind("<Button-1>", getback)
 
 # endregion
 
