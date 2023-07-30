@@ -2,6 +2,7 @@ import customtkinter as ctk
 import requests
 import crypt
 from tkinter import font
+from cryptography.fernet import Fernet
 import json
 
 def check_password(plaintext_password, hashed_password):
@@ -29,7 +30,7 @@ def login():
     pwlabel = ctk.CTkLabel(root, text="Password :",
                            fg_color="transparent", font=('arial', 15))
     pwlabel.place(x=210, y=170)
-    pwentry = ctk.CTkEntry(master=root, width=300, font=("arial", 17))
+    pwentry = ctk.CTkEntry(master=root, width=300, font=("arial", 17), show="*")
     bool_var = ctk.BooleanVar()
     bool_button = ctk.CTkCheckBox(
         root, text="Network Login", variable=bool_var)
@@ -133,7 +134,7 @@ def signup(event):
     pwlabel = ctk.CTkLabel(root, text="Password :",
                            fg_color="transparent", font=('arial', 15))
     pwlabel.place(x=210, y=170)
-    pw_entry = ctk.CTkEntry(master=root, width=300, font=("arial", 17))
+    pw_entry = ctk.CTkEntry(master=root, width=300, font=("arial", 17), show="*")
     bool_var = ctk.BooleanVar()
     bool_button = ctk.CTkCheckBox(
         root, text="Network Registering", variable=bool_var)
