@@ -106,7 +106,7 @@ def register(username, password):
     }
 
     try:
-        with open('data/accounts/accounts.json', 'r') as json_file:
+        with open('data/accounts/accounts.json', 'w') as json_file:
             existing_data = json.load(json_file)
             label = ctk.CTkLabel(root, text=("Register as " + username),
                                  fg_color="transparent", font=('Calibri Light', 17))
@@ -114,7 +114,7 @@ def register(username, password):
     except FileNotFoundError:
         # If the file doesn't exist yet, set existing_data to an empty list or dictionary
         existing_data = []
-    existing_data.append(data)
+    existing_data.append()
     with open('data/accounts/accounts.json', 'w') as json_file:
         json.dump(existing_data, json_file, indent=4)
 
