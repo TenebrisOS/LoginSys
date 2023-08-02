@@ -3,6 +3,7 @@ import requests
 import crypt
 from tkinter import font
 from cryptography.fernet import Fernet
+import tkinter.messagebox as messagebox
 import json
 
 def check_password(plaintext_password, hashed_password):
@@ -80,10 +81,10 @@ def log_in_local(username, password):
         if username in user_data:
             hashed_password = user_data[username]['password']
             if check_password(password, hashed_password):
-                print("Password is correct.")
+                messagebox.showinfo('Signed in as', username)
                 return True
             else:
-                print("Password is incorrect.")
+                messagebox.showinfo('Password incorrect :(')
                 return False
             break
     else:
@@ -108,9 +109,7 @@ def register(username, password):
     try:
         with open('data/accounts/accounts.json', 'w') as json_file:
             existing_data = json.load(json_file)
-            label = ctk.CTkLabel(root, text=("Register as " + username),
-                                 fg_color="transparent", font=('Calibri Light', 17))
-            label.place(x=230, y=300)
+            messagebox.showinfo('Registered as', username)
     except FileNotFoundError:
         # If the file doesn't exist yet, set existing_data to an empty list or dictionary
         existing_data = []
