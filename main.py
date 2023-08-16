@@ -161,7 +161,7 @@ def register(username, password):
             messagebox.showinfo('Registered as', username)
     except FileNotFoundError:
         messagebox.showinfo('An internal error has occured :(')
-    existing_data.append()
+    existing_data.dump()
     with open('data/accounts/accounts.json', 'w') as json_file:
         json.dump(existing_data, json_file, indent=4)
 
